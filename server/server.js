@@ -1,5 +1,6 @@
 require('./config/config');
 const express = require('express');
+const mongoose = require('mongoose');
 const app = express();
 const bodyParser = require('body-parser');
 
@@ -9,34 +10,22 @@ app.use(bodyParser.urlencoded({ extended: false })); //todas las peticiones que 
 // parse application/json
 app.use(bodyParser.json());
 
-app.get('/usuario', function(req, res) {
-    res.json('get Usuario')
-})
+// Asi es como importo las rutas del file routes
+app.use(require('./routes/usuario'));
 
-app.post('/usuario', function(req, res) { // mas para crear nuevos registros
-    let body = req.body;
-    if (body.nombre === undefined) {
-        res.status(400).json({
-            ok: false,
-            mensaje: "El nombre es necesario"
-        }); //para informar el codigo de estado 
-    } else {
-        res.json({
-            body,
-        });
-    }
-})
-
-app.put('/usuario/:id', function(req, res) { // mas para actualizar registros
-    let id = req.params.id;
-    res.json({
-        id,
+mongoose.connect(process.env.URLDB, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+    },
+    (err, res) => {
+        if (err) throw err;
+        console.log('Base de datos ONLINE');
     });
-})
-
-app.delete('/usuario', function(req, res) { // para poner registros en modo no activo
-    res.json('delete Usuario')
-})
+// await {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+// }
 
 app.listen(process.env.PORT, () => {
     console.log("Escuchando el puerto", process.env.PORT);
