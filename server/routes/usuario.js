@@ -3,8 +3,10 @@ const app = express();
 const _ = require('underscore');
 const bcrypt = require('bcrypt'); // paquete que encripta las contraseñas
 const Usuario = require('../models/usuario');
+const { verificaToken, verifica_AdminRole } = require('../middlewares/autenticacion');
 
-app.get('/usuario', function(req, res) {
+app.get('/usuario', verificaToken, (req, res) => {
+
     let desde = req.query.desde || 0;
     desde = Number(desde);
     let limite = req.query.limite || 5;
@@ -32,7 +34,7 @@ app.get('/usuario', function(req, res) {
         })
 })
 
-app.post('/usuario', function(req, res) { // mas para crear nuevos registros
+app.post('/usuario', [verificaToken, verifica_AdminRole], (req, res) => { // mas para crear nuevos registros
     let body = req.body; //usado para optener los datos que ingreso por el postman
 
     let usuario = new Usuario({
@@ -57,9 +59,9 @@ app.post('/usuario', function(req, res) { // mas para crear nuevos registros
     })
 })
 
-app.put('/usuario/:id', function(req, res) { // mas para actualizar registros
+app.put('/usuario/:id', [verificaToken, verifica_AdminRole], (req, res) => { // mas para actualizar registros
     let id = req.params.id;
-    let body = _pick(req.body, ['nombre', 'email', 'img', 'role', ]);
+    let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', ]);
 
 
     //, update, options,
@@ -78,7 +80,7 @@ app.put('/usuario/:id', function(req, res) { // mas para actualizar registros
 
 })
 
-app.delete('/usuario/:id', function(req, res) { // para poner registros en modo no activo
+app.delete('/usuario/:id', [verificaToken, verifica_AdminRole], (req, res) => { // para poner registros en modo no activo
     let id = req.params.id;
     let cambiaEstado = {
             estado: false,

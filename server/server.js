@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false })); //todas las peticiones que 
 app.use(bodyParser.json());
 
 // Asi es como importo las rutas del file routes
-app.use(require('./routes/usuario'));
+app.use(require('./routes/index'));
 
 mongoose.connect(process.env.URLDB, {
         useNewUrlParser: true,
